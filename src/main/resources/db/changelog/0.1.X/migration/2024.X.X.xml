@@ -1,0 +1,52 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="20240320200000" author="Thalita">
+
+        <createSequence sequenceName="cliente_id_seq"/>
+        <createSequence sequenceName="contato_id_seq"/>
+
+        <createTable tableName="cliente">
+            <column name="id" type="bigint"/>
+            <column name="nome" type="varchar(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cpf" type="varchar(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data_nascimento" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ativo" type="boolean"/>
+        </createTable>
+
+        <addPrimaryKey tableName="cliente" columnNames="id" constraintName="cliente_id_PK"/>
+
+        <createTable tableName="contato">
+            <column name="id" type="bigint"/>
+            <column name="nome" type="varchar(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="telefone" type="varchar(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cliente_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ativo" type="boolean"/>
+        </createTable>
+
+        <addPrimaryKey tableName="contato" columnNames="id" constraintName="contato_id_PK"/>
+
+        <addForeignKeyConstraint baseTableName="contato" baseColumnNames="cliente_id"
+                                 constraintName="contato_cliente_id_FK" referencedTableName="cliente"
+                                 referencedColumnNames="id"/>
+
+    </changeSet>
+</databaseChangeLog>
