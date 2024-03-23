@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
 @EqualsAndHashCode
 @Entity
 @Table(name = "cliente")
-public class Cliente {
+public class Cliente implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -45,11 +46,19 @@ public class Cliente {
     @JsonIgnoreProperties("cliente")
     private List<Contato> contato = new ArrayList<>();
 
-    public Cliente (DadosCliente dados){
+    public Cliente(DadosCliente dados) {
         this.ativo = true;
         this.nome = dados.nome;
         this.cpf = dados.cpf;
         this.dataNascimento = dados.dataNascimento;
         this.contato = dados.contatoList;
+    }
+
+    public Cliente update(DadosCliente cliente) {
+        this.nome = cliente.getNome();
+        this.cpf = cliente.cpf;
+        this.dataNascimento = cliente.getDataNascimento();
+        this.contato = cliente.getContatoList();
+        return this;
     }
 }

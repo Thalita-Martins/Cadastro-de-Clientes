@@ -30,11 +30,11 @@ public class Contato {
 
     private String nome;
 
-    private String telefone ;
+    private String telefone;
 
     private String email;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
