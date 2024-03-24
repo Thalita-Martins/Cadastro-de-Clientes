@@ -6,7 +6,6 @@ import com.thalitamartins.cadastroclientes.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +23,7 @@ public class ClienteController {
     }
 
     @GetMapping("/listar")
-    public Page<DadosCliente> findAllCliente(@PageableDefault(size = 10, sort = "nome") @RequestParam(value = "nome",
-            required = false) String nome,
+    public Page<DadosCliente> findAllCliente(@RequestParam(value = "nome", required = false) String nome,
                                              @RequestParam(value = "cpf", required = false) String cpf,
                                              @RequestParam(value = "dataNascimento", required = false) LocalDate dataNascimento,
                                              Pageable pageable) {

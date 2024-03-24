@@ -1,7 +1,5 @@
 package com.thalitamartins.cadastroclientes.dto;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.thalitamartins.cadastroclientes.domain.Cliente;
 import com.thalitamartins.cadastroclientes.domain.Contato;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -20,17 +18,11 @@ import java.util.List;
 public class DadosCliente {
 
     private Long id;
-
     public String nome;
-
     public String cpf;
-
     @JsonFormat(pattern = "dd/MM/yyyy")
     public LocalDate dataNascimento;
-
     public Boolean ativo;
-
-    @JsonIgnoreProperties("cliente")
     public List<Contato> contatoList = new ArrayList<>();
 
     public DadosCliente dados(Cliente cliente) {

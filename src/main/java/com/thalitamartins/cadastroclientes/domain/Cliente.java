@@ -1,12 +1,13 @@
 package com.thalitamartins.cadastroclientes.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import br.com.caelum.stella.validation.CPFValidator;
+import br.com.caelum.stella.validation.InvalidStateException;
 import com.thalitamartins.cadastroclientes.dto.DadosCliente;
+import com.thalitamartins.cadastroclientes.exception.MensagemException;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import org.apache.commons.validator.routines.EmailValidator;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -17,6 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@ToString
+@Builder
 @EqualsAndHashCode
 @Entity
 @Table(name = "cliente")
@@ -33,17 +36,11 @@ public class Cliente implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQ_GENERATOR)
     @SequenceGenerator(name = SEQ_GENERATOR, sequenceName = SEQ_NAME, allocationSize = 1)
     private Long id;
-
     private String nome;
-
     private String cpf;
-
     private LocalDate dataNascimento;
-
     private Boolean ativo;
-
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "cliente")
-    @JsonIgnoreProperties("cliente")
     private List<Contato> contato = new ArrayList<>();
 
     public Cliente(DadosCliente dados) {
@@ -54,11 +51,41 @@ public class Cliente implements Serializable {
         this.contato = dados.contatoList;
     }
 
-    public Cliente update(DadosCliente cliente) {
-        this.nome = cliente.getNome();
-        this.cpf = cliente.cpf;
-        this.dataNascimento = cliente.getDataNascimento();
-        this.contato = cliente.getContatoList();
-        return this;
+    public void validarDadosCliente(DadosCliente dadosCliente) {
+        if (!validarCpf(dadosCliente.getCpf())) {
+            throw new MensagemException("CPF inválido!");
+        }
+
+        if (!validarDataNascimento(dadosCliente.getDataNascimento())) {
+            throw new MensagemException("Data nascimento informada como futura!");
+        }
+
+        if (dadosCliente.getContatoList().isEmpty()) {
+            throw new MensagemException("Cliente precisa de pelo menos 1 contato!");
+        }
+
+        if (dadosCliente.contatoList.stream().noneMatch(contato -> validarEmail(contato.getEmail()))) {
+            throw new MensagemException("E-mail do contato inválido!");
+        }
+    }
+
+    public boolean validarCpf(String cpf) {
+        CPFValidator validar = new CPFValidator();
+        try {
+            validar.assertValid(cpf);
+            return true;
+        } catch (InvalidStateException e) {
+            return false;
+        }
+    }
+
+    public Boolean validarDataNascimento(LocalDate data) {
+        var dataAtual = LocalDate.now();
+        return data.isBefore(dataAtual);
+    }
+
+    public boolean validarEmail(String email) {
+        EmailValidator validador = EmailValidator.getInstance();
+        return validador.isValid(email);
     }
 }
